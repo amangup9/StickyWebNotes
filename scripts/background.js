@@ -8,7 +8,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
     chrome.contextMenus.onClicked.addListener((info, tab) => {
       chrome.tabs.sendMessage(tab.id, {
-        action: "ADD_NOTE_CLICKED", // Defensive programming
+        action: "ADD_NOTE_CLICKED",
       });
     });
 

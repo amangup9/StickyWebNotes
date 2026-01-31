@@ -85,17 +85,11 @@ const saveOptions = () => {
   const contextAdd = document.getElementById("contextAdd").checked;
 
   chrome.storage.sync.set({ dblclkAdd: dblclkAdd, contextAdd: contextAdd });
-  if (!contextAdd) {
-    chrome.contextMenus.update(
-      "addNote",
-      { visible: false }
-    );
-  } else {
-    chrome.contextMenus.update(
-      "addNote",
-      { visible: true }
-    );
-  }
+  chrome.contextMenus.update(
+    "addNote",
+    { visible: contextAdd }
+  );
+  console.log("Updated context menu visibility:", contextAdd);
 };
 
 const restoreOptions = () => {

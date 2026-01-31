@@ -43,16 +43,11 @@ var myNotesArray = new Array();
   document.addEventListener("contextmenu", (e) => {
     rClickPos = { x: e.clientX, y: e.clientY };
   });
-
+  // This can only happen if context menu is visible, sanity check not needed.
   chrome.runtime.onMessage.addListener((req, sender, res) => {
     if (req.action == "ADD_NOTE_CLICKED") {
-      chrome.storage.sync.get({ contextAdd: false })
-        .then((items) => {
-          if (items.contextAdd) {
-            const id = 'note-' + new Date().getTime();
-            createNoteElement(id, '', rClickPos);
-          }
-        });
+      const id = 'note-' + new Date().getTime();
+      createNoteElement(id, '', rClickPos);
     }
   });
 
