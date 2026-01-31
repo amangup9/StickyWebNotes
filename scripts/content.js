@@ -27,27 +27,34 @@ var myNotesArray = new Array();
     }
   })
 
-
   // Create a new note
-/*
   document.addEventListener('dblclick', (e) => {
-    const id = 'note-' + new Date().getTime();
-    const position = { x: e.pageX, y: e.pageY };
-    createNoteElement(id, '', position);
+    chrome.storage.sync.get({ dblclkAdd: true })
+      .then((items) => {
+        if (items.dblclkAdd) {
+          const id = 'note-' + new Date().getTime();
+          const position = { x: e.pageX, y: e.pageY };
+          createNoteElement(id, '', position);
+        }
+      });
   });
-*/
-  let clickPos = { x: 0, y: 0 };
+
+  let rClickPos = { x: 0, y: 0 };
   document.addEventListener("contextmenu", (e) => {
-    clickPos = { x: e.clientX, y: e.clientY };
+    rClickPos = { x: e.clientX, y: e.clientY };
   });
 
   chrome.runtime.onMessage.addListener((req, sender, res) => {
-    if (req.action == "ADD_NOTE_CLICKED") { // Defensive programming
-      console.log("Adding note through context menu.");
-      const id = 'note-' + new Date().getTime();
-      createNoteElement(id, '', clickPos);
+    if (req.action == "ADD_NOTE_CLICKED") {
+      chrome.storage.sync.get({ contextAdd: false })
+        .then((items) => {
+          if (items.contextAdd) {
+            const id = 'note-' + new Date().getTime();
+            createNoteElement(id, '', rClickPos);
+          }
+        });
     }
-  })
+  });
 
   function createNoteElement(id, text, position) {
 

@@ -2,7 +2,8 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
       id: "addNote",
       title: "Add note",
-      contexts: ["all"]
+      contexts: ["all"],
+      visible: false
     });
 
     chrome.contextMenus.onClicked.addListener((info, tab) => {
