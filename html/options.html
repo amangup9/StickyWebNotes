@@ -7,10 +7,23 @@
     <link rel="stylesheet" href="../styles/optionsstyle.css">
 </head>
 <body>
-    <h1>Sticky Web Notes</h1>
-    <p>All sticky notes across web pages appear here.</p>
-    <ol id="expandableList">
-    </ol>  
-    <script src="../scripts/options.js"></script>
+    <section>
+      <h1>Settings</h1>
+      <div>
+        <input type="checkbox" id="dblclkAdd" name="dblclkAdd" />
+        <label for=dblclkAdd">Add by double clicking page</label>
+      </div>
+      <div>
+        <input type="checkbox" id="contextAdd" name="contextMenuadd" />
+        <label for="contextAdd">Add from context menu</label>
+      </div>
+    </section>
+    <section>
+      <h1>Sticky Web Notes</h1>
+      <p>All sticky notes across web pages appear here.</p>
+      <ol id="expandableList">
+      </ol>
+      <script src="../scripts/options.js"></script>
+    </section>
 </body>
 </html>

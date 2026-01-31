@@ -67,17 +67,36 @@ chrome.storage.local.get(null, (listData) => {
          a.click();
          URL.revokeObjectURL(url);
       }
-      
+
       function populateList(data) {
         Object.keys(data).forEach(key => {
               const listItem = createListItem(key, data[key]);
               expandableList.appendChild(listItem);
               count++;
         });
-       
+
       }
-      
+
       populateList(listData);
 })
-  
 
+const saveOptions = () => {
+  const dblclkAdd = document.getElementById("dblclkAdd").checked;
+  const contextAdd = document.getElementById("contextAdd").checked;
+
+  chrome.storage.sync.set({ dblclkAdd: dblclkAdd, contextAdd: contextAdd });
+};
+
+const restoreOptions = () => {
+  chrome.storage.sync.get(
+    { contextAdd: false, dblclkAdd: true },
+    (items) => {
+      document.getElementById("dblclkAdd").checked = items.dblclkAdd;
+      document.getElementById("contextAdd").checked = items.contextAdd;
+    }
+  );
+};
+
+document.addEventListener('DOMContentLoaded', restoreOptions);
+document.getElementById("dblclkAdd").addEventListener('change', saveOptions);
+document.getElementById("contextAdd").addEventListener('change', saveOptions);
