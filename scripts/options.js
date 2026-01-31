@@ -2,12 +2,12 @@ let expandableList = document.getElementById('expandableList');
 let count = 1;
 
 chrome.storage.local.get(null, (listData) => {
-    
+
     function createListItem(key, value) {
 
         const listItem = document.createElement('li');
         listItem.classList.add('expandable-item');
-      
+
         const link = document.createElement('a');
         link.href = key;
         link.target = "_blank";
@@ -22,7 +22,7 @@ chrome.storage.local.get(null, (listData) => {
         const numbering = document.createElement('div');
         numbering.innerText = count + ". ";
         numbering.style.width = '20px';
-        
+
         const downloadButton = document.createElement('div');
         downloadButton.id = key;
         downloadButton.innerHTML = '<a href="#">download notes</a>';
@@ -31,13 +31,13 @@ chrome.storage.local.get(null, (listData) => {
         downloadButton.style.float = 'right';
         downloadButton.style.width = '7%';
         downloadButton.addEventListener('click', downloadNotes);
-     
+
         heading.append(numbering);
         heading.append(link);
         heading.append(downloadButton);
-      
+
         const noteArray = document.createElement('ol');
-        
+
 
         value.forEach((noteText) =>{
             const note = document.createElement('li');
@@ -45,14 +45,14 @@ chrome.storage.local.get(null, (listData) => {
             note.textContent = noteText.text;
             noteArray.appendChild(note);
         })
-      
+
         listItem.appendChild(heading);
         listItem.appendChild(noteArray);
-      
+
         listItem.addEventListener('click', () => {
           listItem.classList.toggle('expanded');
         });
-      
+
         return listItem;
       }
 
@@ -67,17 +67,41 @@ chrome.storage.local.get(null, (listData) => {
          a.click();
          URL.revokeObjectURL(url);
       }
-      
+
       function populateList(data) {
         Object.keys(data).forEach(key => {
               const listItem = createListItem(key, data[key]);
               expandableList.appendChild(listItem);
               count++;
         });
-       
+
       }
-      
+
       populateList(listData);
 })
-  
 
+const saveOptions = () => {
+  const dblclkAdd = document.getElementById("dblclkAdd").checked;
+  const contextAdd = document.getElementById("contextAdd").checked;
+
+  chrome.storage.sync.set({ dblclkAdd: dblclkAdd, contextAdd: contextAdd });
+  chrome.contextMenus.update(
+    "addNote",
+    { visible: contextAdd }
+  );
+  console.log("Updated context menu visibility:", contextAdd);
+};
+
+const restoreOptions = () => {
+  chrome.storage.sync.get(
+    { contextAdd: false, dblclkAdd: true },
+    (items) => {
+      document.getElementById("dblclkAdd").checked = items.dblclkAdd;
+      document.getElementById("contextAdd").checked = items.contextAdd;
+    }
+  );
+};
+
+document.addEventListener('DOMContentLoaded', restoreOptions);
+document.getElementById("dblclkAdd").addEventListener('change', saveOptions);
+document.getElementById("contextAdd").addEventListener('change', saveOptions);

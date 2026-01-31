@@ -8,7 +8,7 @@ var myNotesArray = new Array();
     urlObj.hash = '';
     return urlObj.toString();
   }
-  
+
   const originalUrl = window.location.href;
   const cleanUrl = removeFragmentIdentifier(originalUrl);
 
@@ -23,16 +23,32 @@ var myNotesArray = new Array();
         let note = myNotesArray[i];
         createNoteElement(note.id, note.text, note.position);
       }
-  
+
     }
   })
 
-
   // Create a new note
   document.addEventListener('dblclick', (e) => {
-    const id = 'note-' + new Date().getTime();
-    const position = { x: e.pageX, y: e.pageY };
-    createNoteElement(id, '', position);
+    chrome.storage.sync.get({ dblclkAdd: true })
+      .then((items) => {
+        if (items.dblclkAdd) {
+          const id = 'note-' + new Date().getTime();
+          const position = { x: e.pageX, y: e.pageY };
+          createNoteElement(id, '', position);
+        }
+      });
+  });
+
+  let rClickPos = { x: 0, y: 0 };
+  document.addEventListener("contextmenu", (e) => {
+    rClickPos = { x: e.clientX, y: e.clientY };
+  });
+  // This can only happen if context menu is visible, sanity check not needed.
+  chrome.runtime.onMessage.addListener((req, sender, res) => {
+    if (req.action == "ADD_NOTE_CLICKED") {
+      const id = 'note-' + new Date().getTime();
+      createNoteElement(id, '', rClickPos);
+    }
   });
 
   function createNoteElement(id, text, position) {
@@ -64,7 +80,7 @@ var myNotesArray = new Array();
     header.style.padding = '10px';
     header.style.height = '3px';
     header.style.position = 'relative';
-  
+
 
     const deleteButton = document.createElement('button');
     deleteButton.innerText='X';
@@ -94,36 +110,36 @@ var myNotesArray = new Array();
 
     container.appendChild(header);
     container.appendChild(note);
-  
+
     note.addEventListener('input', () => saveNote(id, note.innerText, position));
-  
+
     // Enable dragging
     let isDragging = false;
     let offsetX, offsetY;
-  
+
     header.addEventListener('mousedown', (e) => {
       isDragging = true;
       offsetX = e.clientX - container.offsetLeft;
       offsetY = e.clientY - container.offsetTop;
     });
-  
+
     document.addEventListener('mousemove', (e) => {
       if (isDragging) {
         container.style.left = e.clientX - offsetX + 'px';
         container.style.top = e.clientY - offsetY + 'px';
       }
     });
-  
+
     document.addEventListener('mouseup', () => {
       if (isDragging) {
         isDragging = false;
         saveNote(id, note.innerText, { x: container.offsetLeft, y: container.offsetTop });
       }
     });
-  
+
     document.body.appendChild(container);
   }
-  
+
   function saveNote(id, text, position) {
     const index = myNotesArray.findIndex(item => item.id === id);
     if(index != -1) {
@@ -142,7 +158,7 @@ var myNotesArray = new Array();
      myNotesArray.push(myNote);
     }
 
- 
+
     chrome.storage.local.set({ [cleanUrl]: myNotesArray }, function() {
       if (chrome.runtime.error) {
         console.error("Error setting item:", chrome.runtime.error);
