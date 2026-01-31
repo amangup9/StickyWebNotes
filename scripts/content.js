@@ -8,7 +8,7 @@ var myNotesArray = new Array();
     urlObj.hash = '';
     return urlObj.toString();
   }
-  
+
   const originalUrl = window.location.href;
   const cleanUrl = removeFragmentIdentifier(originalUrl);
 
@@ -23,7 +23,7 @@ var myNotesArray = new Array();
         let note = myNotesArray[i];
         createNoteElement(note.id, note.text, note.position);
       }
-  
+
     }
   })
 
@@ -64,7 +64,7 @@ var myNotesArray = new Array();
     header.style.padding = '10px';
     header.style.height = '3px';
     header.style.position = 'relative';
-  
+
 
     const deleteButton = document.createElement('button');
     deleteButton.innerText='X';
@@ -94,36 +94,36 @@ var myNotesArray = new Array();
 
     container.appendChild(header);
     container.appendChild(note);
-  
+
     note.addEventListener('input', () => saveNote(id, note.innerText, position));
-  
+
     // Enable dragging
     let isDragging = false;
     let offsetX, offsetY;
-  
+
     header.addEventListener('mousedown', (e) => {
       isDragging = true;
       offsetX = e.clientX - container.offsetLeft;
       offsetY = e.clientY - container.offsetTop;
     });
-  
+
     document.addEventListener('mousemove', (e) => {
       if (isDragging) {
         container.style.left = e.clientX - offsetX + 'px';
         container.style.top = e.clientY - offsetY + 'px';
       }
     });
-  
+
     document.addEventListener('mouseup', () => {
       if (isDragging) {
         isDragging = false;
         saveNote(id, note.innerText, { x: container.offsetLeft, y: container.offsetTop });
       }
     });
-  
+
     document.body.appendChild(container);
   }
-  
+
   function saveNote(id, text, position) {
     const index = myNotesArray.findIndex(item => item.id === id);
     if(index != -1) {
@@ -142,7 +142,7 @@ var myNotesArray = new Array();
      myNotesArray.push(myNote);
     }
 
- 
+
     chrome.storage.local.set({ [cleanUrl]: myNotesArray }, function() {
       if (chrome.runtime.error) {
         console.error("Error setting item:", chrome.runtime.error);
